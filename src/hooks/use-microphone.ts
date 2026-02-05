@@ -25,13 +25,16 @@ export function useMicrophone(): UseMicrophoneReturn {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const analyzeAudioRef = useRef<(() => void) | null>(null);
 
   // Check if getUserMedia is supported
+  // This is necessary for SSR/hydration - we need to detect browser capabilities
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const supported = !!(
         navigator.mediaDevices && navigator.mediaDevices.getUserMedia
       );
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsSupported(supported);
 
       if (!supported) {
@@ -58,20 +61,28 @@ export function useMicrophone(): UseMicrophoneReturn {
     }
   }, []);
 
-  // Analyze audio levels
+  // Analyze audio levels - use ref to avoid self-reference in useCallback
+  useEffect(() => {
+    analyzeAudioRef.current = () => {
+      if (!analyserRef.current) return;
+
+      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+      analyserRef.current.getByteFrequencyData(dataArray);
+
+      // Calculate average volume level
+      const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+      const normalizedLevel = Math.min(100, (average / 128) * 100);
+
+      setAudioLevel(normalizedLevel);
+
+      if (analyzeAudioRef.current) {
+        animationFrameRef.current = requestAnimationFrame(analyzeAudioRef.current);
+      }
+    };
+  }, []);
+
   const analyzeAudio = useCallback(() => {
-    if (!analyserRef.current) return;
-
-    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-    analyserRef.current.getByteFrequencyData(dataArray);
-
-    // Calculate average volume level
-    const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-    const normalizedLevel = Math.min(100, (average / 128) * 100);
-
-    setAudioLevel(normalizedLevel);
-
-    animationFrameRef.current = requestAnimationFrame(analyzeAudio);
+    analyzeAudioRef.current?.();
   }, []);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {

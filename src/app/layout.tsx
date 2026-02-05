@@ -1,10 +1,26 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Playfair_Display, Roboto } from 'next/font/google';
+import { ThemeProvider } from '@/components/common/theme-provider';
 import './globals.css';
 
+// Primary sans-serif font (fallback)
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+});
+
+// Display font for headings (galam.com style)
+const playfair = Playfair_Display({
+  variable: '--font-playfair',
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+});
+
+// Body font (galam.com style)
+const roboto = Roboto({
+  variable: '--font-roboto',
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
 });
 
 export const metadata: Metadata = {
@@ -21,8 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+      <body className={`${inter.variable} ${playfair.variable} ${roboto.variable} font-sans antialiased`}>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

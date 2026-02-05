@@ -1,0 +1,81 @@
+# Miyara Brand Discovery - Progress Log
+
+## Completed Features
+
+### Core Application
+- [x] Next.js 14 project setup with TypeScript and Tailwind CSS
+- [x] Supabase database integration (sessions, identified_values, deliverables tables)
+- [x] Anthropic Claude API integration for conversational AI
+- [x] Custom Miyara brand strategist persona with structured session flow
+
+### Session Flow
+- [x] 9-phase session structure (OPENING through COMPLETE)
+- [x] State machine for phase tracking and transitions
+- [x] Conversation orchestrator for managing AI interactions
+- [x] Proper phase transition rules in system prompt
+
+### UI/UX
+- [x] Welcome/setup screen with intro video
+- [x] Full-width conversation window layout
+- [x] Combined text input + audio button in bottom bar
+- [x] Value cards display during rapid-fire exercise
+- [x] Real-time transcript preview while speaking
+- [x] Processing/thinking indicator
+
+### Speech Recognition
+- [x] Browser-native Web Speech API implementation
+- [x] Debounce-based auto-send (1.8s pause triggers submission)
+- [x] Visual feedback for listening state
+
+### Deliverables
+- [x] Automatic deliverable generation on session complete
+- [x] Shareable deliverable pages with unique slugs
+- [x] Values summary component with personalized definitions
+- [x] Download and share buttons
+
+### Infrastructure
+- [x] API routes for session management (start, message, complete)
+- [x] Zustand store for client-side state
+- [x] Error handling and recovery
+- [x] GitHub repository setup
+
+## In Progress
+- [ ] Documentation retrofit (CLAUDE.md, FRONTEND_GUIDELINES.md)
+- [ ] Exercise module architecture
+
+## Planned / Future Enhancements
+- [ ] Brand Personality exercise
+- [ ] Brand Spectra exercise
+- [ ] Enhanced deliverable combining all exercises
+- [ ] Text-to-speech for AI responses (ElevenLabs or similar)
+- [ ] User authentication and saved sessions
+- [ ] Session history and resume capability
+- [ ] Analytics dashboard for session insights
+- [ ] Export deliverables as PDF
+- [ ] Multi-language support
+- [ ] Mobile-optimized experience
+- [ ] Admin panel for prompt tuning
+
+## Known Issues
+- Speech recognition requires Chrome/Edge (Web Speech API support)
+- No persistent auth - sessions are anonymous
+
+## Recent Changes (Latest First)
+
+### 2024-02-05
+- Pushed code to GitHub (acousticpixel/Miyara-brand-discovery)
+- All core features complete and working
+
+### Previous Session
+- Fixed session getting stuck in SYNTHESIS phase
+- Added explicit phase transition rules to system prompt
+- Fixed synthesisDelivered tracking in orchestrator
+- Added deliverable generation call before redirect to deliverable page
+- Replaced Deepgram WebSocket with Web Speech API
+- Updated layout: full-width conversation, text+audio input bar at bottom
+- Fixed avatar state blocking further input after AI response
+- Removed LiveAvatar, added pre-recorded intro video
+
+## NOTES FOR NEXT SESSION
+- Need to define Exercise interface before adding new exercises
+- Visual consistency needs work - lock design tokens

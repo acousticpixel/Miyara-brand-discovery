@@ -95,7 +95,7 @@ const initialState = {
   error: null,
 };
 
-export const useSessionStore = create<SessionStore>((set, get) => ({
+export const useSessionStore = create<SessionStore>((set) => ({
   ...initialState,
 
   startSession: (sessionId, companyName, userName) => {

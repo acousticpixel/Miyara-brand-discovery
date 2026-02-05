@@ -43,7 +43,7 @@ export function ValueCards({
 
       {mode === 'display' && words.length > 0 && (
         <p className="text-center text-sm text-muted-foreground">
-          Respond by saying "yes", "no", or "maybe" for each word
+          Respond by saying &quot;yes&quot;, &quot;no&quot;, or &quot;maybe&quot; for each word
         </p>
       )}
     </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface AudioVisualizerProps {
@@ -13,12 +14,25 @@ export function AudioVisualizer({
   isActive,
   className,
 }: AudioVisualizerProps) {
+  // Use state for animation time to avoid impure Date.now() in render
+  const [animationTime, setAnimationTime] = useState(0);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const interval = setInterval(() => {
+      setAnimationTime(Date.now());
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [isActive]);
+
   // Generate bar heights based on audio level with some randomization
   const bars = 5;
   const getBarHeight = (index: number) => {
     if (!isActive) return 4;
     const baseHeight = audioLevel * 0.4;
-    const variation = Math.sin(Date.now() / 100 + index * 0.5) * 10;
+    const variation = Math.sin(animationTime / 100 + index * 0.5) * 10;
     return Math.max(4, Math.min(40, baseHeight + variation));
   };
 

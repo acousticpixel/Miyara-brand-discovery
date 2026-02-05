@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSessionStore } from '@/stores/session-store';
 
-interface UseDeepgramReturn {
+interface UseSpeechReturn {
   isConnected: boolean;
   isListening: boolean;
   transcript: string;
@@ -77,9 +77,9 @@ function getSpeechRecognitionConstructor(): (new () => SpeechRecognition) | null
 // How long to wait after the last final result before auto-sending to AI
 const UTTERANCE_END_DELAY_MS = 1800;
 
-export function useDeepgram(
+export function useSpeech(
   onTranscriptComplete?: (transcript: string) => void
-): UseDeepgramReturn {
+): UseSpeechReturn {
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -94,9 +94,11 @@ export function useDeepgram(
 
   const { setCurrentTranscript, setListening } = useSessionStore();
 
-  // Stable ref for the callback
+  // Stable ref for the callback - updated via effect to avoid render-time ref assignment
   const onTranscriptCompleteRef = useRef(onTranscriptComplete);
-  onTranscriptCompleteRef.current = onTranscriptComplete;
+  useEffect(() => {
+    onTranscriptCompleteRef.current = onTranscriptComplete;
+  }, [onTranscriptComplete]);
 
   // Flush accumulated transcript to the AI
   const flushTranscript = useCallback(() => {
@@ -182,7 +184,7 @@ export function useDeepgram(
   }, []);
 
   const startListening = useCallback(
-    (_stream: MediaStream) => {
+    (_stream: MediaStream) => { // eslint-disable-line @typescript-eslint/no-unused-vars
       // The MediaStream param is kept for API compatibility but Web Speech API
       // handles its own audio capture internally.
 

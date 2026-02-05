@@ -10,6 +10,7 @@ interface DownloadButtonProps {
   className?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function DownloadButton({ deliverableId, className }: DownloadButtonProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);

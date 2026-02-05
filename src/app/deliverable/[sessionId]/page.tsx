@@ -9,7 +9,7 @@ import { DownloadButton, ShareButton } from '@/components/deliverable/download-b
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import type { DeliverableContent, IdentifiedValue } from '@/types/session';
+import type { DeliverableContent } from '@/types/session';
 
 interface DeliverableData {
   id: string;

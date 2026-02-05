@@ -5,7 +5,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { createOrchestrator } from '@/lib/agent/orchestrator';
 import type { SessionState } from '@/lib/agent/state-machine';
 import type { SessionPhase, ConversationMessage } from '@/types/session';
-import type { AgentResponse } from '@/types/agent';
+import type { AgentResponse as _AgentResponse } from '@/types/agent'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 interface MessageRequest {
   session_id: string;

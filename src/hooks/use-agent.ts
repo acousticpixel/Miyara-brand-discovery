@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSession } from './use-session';
 import { useMicrophone } from './use-microphone';
-import { useDeepgram } from './use-deepgram';
+import { useSpeech } from './use-speech';
 import { useSessionStore } from '@/stores/session-store';
 
 interface UseAgentReturn {
@@ -53,14 +53,14 @@ export function useAgent(): UseAgentReturn {
     [session]
   );
 
-  const deepgram = useDeepgram(handleTranscriptComplete);
+  const speech = useSpeech(handleTranscriptComplete);
 
   // Combine errors
   useEffect(() => {
     const errors = [
       session.error,
       microphone.error,
-      deepgram.error,
+      speech.error,
     ].filter(Boolean);
 
     if (errors.length > 0) {
@@ -69,7 +69,7 @@ export function useAgent(): UseAgentReturn {
     } else {
       setCombinedError(null);
     }
-  }, [session.error, microphone.error, deepgram.error, setStoreError]);
+  }, [session.error, microphone.error, speech.error, setStoreError]);
 
   // Start a full session with all components
   const startSession = useCallback(
@@ -91,7 +91,7 @@ export function useAgent(): UseAgentReturn {
         }
 
         // 3. Connect to speech recognition
-        const speechConnected = await deepgram.connect();
+        const speechConnected = await speech.connect();
         if (!speechConnected) {
           console.warn('Speech recognition not available - use text input');
         }
@@ -104,21 +104,21 @@ export function useAgent(): UseAgentReturn {
         setStoreError(message);
       }
     },
-    [session, microphone, deepgram, setAvatarState, setStoreError]
+    [session, microphone, speech, setAvatarState, setStoreError]
   );
 
   // End the session and clean up
   const endSession = useCallback(() => {
-    deepgram.disconnect();
+    speech.disconnect();
     microphone.stopCapture();
     session.endSession();
     setIsReady(false);
-  }, [deepgram, microphone, session]);
+  }, [speech, microphone, session]);
 
   // Toggle voice listening
   const toggleListening = useCallback(async () => {
-    if (deepgram.isListening) {
-      deepgram.stopListening();
+    if (speech.isListening) {
+      speech.stopListening();
       microphone.stopCapture();
       setAvatarState('idle');
     } else {
@@ -128,11 +128,11 @@ export function useAgent(): UseAgentReturn {
 
       const stream = await microphone.startCapture();
       if (stream) {
-        deepgram.startListening(stream);
+        speech.startListening(stream);
         setAvatarState('listening');
       }
     }
-  }, [deepgram, microphone, avatarState, setAvatarState]);
+  }, [speech, microphone, avatarState, setAvatarState]);
 
   // Send a text message directly
   const sendTextMessage = useCallback(
@@ -155,7 +155,7 @@ export function useAgent(): UseAgentReturn {
     startSession,
     endSession,
 
-    isListening: deepgram.isListening,
+    isListening: speech.isListening,
     canSpeak,
     toggleListening,
 
