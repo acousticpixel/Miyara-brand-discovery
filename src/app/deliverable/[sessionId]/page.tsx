@@ -163,6 +163,7 @@ export default function DeliverablePage() {
           companyName={deliverable.content.company_name}
           values={deliverable.content.values}
           generatedAt={deliverable.content.generated_at}
+          sessionSummary={deliverable.content.session_summary}
           className="rounded-lg shadow-lg print:rounded-none print:shadow-none"
         />
       </main>

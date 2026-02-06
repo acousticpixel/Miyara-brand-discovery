@@ -18,7 +18,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-miyara-sky/10">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
@@ -34,7 +34,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-16 lg:py-24">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-miyara-sky">
+          <p className="text-sm font-semibold uppercase tracking-widest text-galam-blue">
             AI-Powered Brand Discovery
           </p>
 
@@ -54,7 +54,7 @@ export default function LandingPage() {
               onClick={handleStart}
               disabled={isStarting}
               size="lg"
-              className="gap-2 bg-miyara-navy px-8 py-6 text-lg hover:bg-miyara-navy/90"
+              className="gap-2 bg-miyara-navy px-8 py-6 text-lg text-white hover:bg-miyara-navy/90"
             >
               {isStarting ? (
                 <>
@@ -174,7 +174,7 @@ export default function LandingPage() {
               onClick={handleStart}
               disabled={isStarting}
               size="lg"
-              className="gap-2 bg-miyara-navy px-8 py-6 text-lg hover:bg-miyara-navy/90"
+              className="gap-2 bg-miyara-navy px-8 py-6 text-lg text-white hover:bg-miyara-navy/90"
             >
               {isStarting ? (
                 <>

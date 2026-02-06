@@ -12,11 +12,15 @@ import { SessionInput } from '@/components/session/session-input';
 import { ValueCards } from '@/components/exercise/value-cards';
 import { ConversationTranscript } from '@/components/exercise/transcript-display';
 import { LoadingSpinner } from '@/components/common/loading-spinner';
+import { Logo } from '@/components/common/logo';
 import { Button } from '@/components/ui/button';
+import { FileText, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function SessionPage() {
   const router = useRouter();
   const [showPermissions, setShowPermissions] = useState(true);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [deliverableSlug, setDeliverableSlug] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState('');
   const [isInitializing, setIsInitializing] = useState(false);
   const conversationEndRef = useRef<HTMLDivElement>(null);
@@ -68,12 +72,16 @@ export default function SessionPage() {
     agent.sendTextMessage(text.trim());
   };
 
-  // When the session reaches COMPLETE, generate the deliverable and navigate
+  // When the session reaches COMPLETE, generate the deliverable (but don't auto-navigate)
+  // Using a ref to track if we've started generating to avoid duplicate calls
+  const hasStartedGenerating = useRef(false);
+
   useEffect(() => {
-    if (currentPhase === 'COMPLETE') {
+    if (currentPhase === 'COMPLETE' && !showCompletion && !hasStartedGenerating.current) {
       const store = useSessionStore.getState();
       if (store.sessionId) {
-        // Call the complete API to generate the deliverable, then navigate
+        hasStartedGenerating.current = true;
+        // Call the complete API to generate the deliverable
         fetch('/api/session/complete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -82,24 +90,109 @@ export default function SessionPage() {
           .then((res) => res.json())
           .then((data) => {
             if (data.success && data.deliverable?.share_slug) {
-              router.push(`/deliverable/${data.deliverable.share_slug}`);
+              setDeliverableSlug(data.deliverable.share_slug);
             } else {
-              // Fallback: navigate by session ID (deliverable page will generate it)
-              router.push(`/deliverable/${store.sessionId}`);
+              // Fallback: use session ID
+              setDeliverableSlug(store.sessionId);
             }
+            setShowCompletion(true);
           })
           .catch(() => {
-            // Fallback: navigate by session ID
-            router.push(`/deliverable/${store.sessionId}`);
+            // Fallback: use session ID
+            setDeliverableSlug(store.sessionId);
+            setShowCompletion(true);
           });
       }
     }
-  }, [currentPhase, router]);
+  }, [currentPhase, showCompletion]);
+
+  // Handle viewing the deliverable
+  const handleViewDeliverable = () => {
+    if (deliverableSlug) {
+      router.push(`/deliverable/${deliverableSlug}`);
+    }
+  };
+
+  // Show completion screen with option to view deliverable
+  if (showCompletion) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white p-4">
+        <div className="w-full max-w-lg space-y-8 text-center">
+          {/* Success icon */}
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-miyara-success/10">
+            <CheckCircle className="h-10 w-10 text-miyara-success" />
+          </div>
+
+          {/* Logo */}
+          <Logo size="lg" />
+
+          {/* Message */}
+          <div className="space-y-4">
+            <h1 className="text-3xl font-light text-miyara-navy">
+              Session Complete!
+            </h1>
+            <p className="text-lg text-miyara-navy/70">
+              Congratulations! You&apos;ve discovered your brand&apos;s core values.
+              Your personalized brand values document is ready.
+            </p>
+          </div>
+
+          {/* What you'll get */}
+          <div className="rounded-lg border border-miyara-sky/20 bg-miyara-sky/5 p-6">
+            <h3 className="font-semibold text-miyara-navy">Your Brand Values Document Includes:</h3>
+            <ul className="mt-4 space-y-2 text-left text-miyara-navy/70">
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-miyara-success" />
+                <span>3-5 core values personalized to your brand</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-miyara-success" />
+                <span>Detailed definitions of what each value means for you</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-miyara-success" />
+                <span>Practical applications and anti-patterns</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-miyara-success" />
+                <span>Key quotes from your session</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* CTA Button */}
+          <Button
+            onClick={handleViewDeliverable}
+            disabled={!deliverableSlug}
+            size="lg"
+            className="w-full gap-2 bg-miyara-navy px-8 py-6 text-lg text-white hover:bg-miyara-navy/90"
+          >
+            {!deliverableSlug ? (
+              <>
+                <LoadingSpinner size="sm" className="text-white" />
+                Preparing your document...
+              </>
+            ) : (
+              <>
+                <FileText className="h-5 w-5" />
+                View My Brand Values
+                <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </Button>
+
+          <p className="text-sm text-miyara-navy/50">
+            You can share or download your document from the next page.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Show permissions/setup screen with intro video
   if (showPermissions) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white to-miyara-sky/10 p-4">
+      <div className="flex min-h-screen items-center justify-center bg-white p-4">
         <div className="w-full max-w-lg space-y-6">
           {/* Intro video */}
           <div className="overflow-hidden rounded-2xl shadow-lg">
@@ -178,7 +271,7 @@ export default function SessionPage() {
             {/* Value cards */}
             {displayedValueCards.length > 0 && (
               <div className="mb-6">
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-miyara-sky">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-galam-blue">
                   Values
                 </h3>
                 <ValueCards

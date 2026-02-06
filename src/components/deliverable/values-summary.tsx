@@ -8,6 +8,7 @@ interface ValuesSummaryProps {
   companyName: string;
   values: IdentifiedValue[];
   generatedAt: string;
+  sessionSummary?: string;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export function ValuesSummary({
   companyName,
   values,
   generatedAt,
+  sessionSummary,
   className,
 }: ValuesSummaryProps) {
   const formattedDate = new Date(generatedAt).toLocaleDateString('en-US', {
@@ -27,7 +29,7 @@ export function ValuesSummary({
     <div className={cn('bg-white', className)}>
       {/* Header */}
       <div className="border-b border-miyara-sky/20 px-8 py-12 text-center lg:px-12">
-        <p className="text-xs font-semibold uppercase tracking-widest text-miyara-sky">
+        <p className="text-xs font-semibold uppercase tracking-widest text-galam-blue">
           Brand Values
         </p>
         <h1 className="mt-4 text-4xl font-light text-miyara-navy lg:text-5xl">
@@ -36,6 +38,38 @@ export function ValuesSummary({
         <p className="mt-4 text-sm text-miyara-navy/60">
           Discovered on {formattedDate}
         </p>
+      </div>
+
+      {/* Session Summary (if available) */}
+      {sessionSummary && (
+        <div className="border-b border-miyara-sky/20 bg-miyara-sky/5 px-8 py-10 lg:px-12">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-galam-blue">
+            Overview
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-miyara-navy">
+            {sessionSummary}
+          </p>
+        </div>
+      )}
+
+      {/* Values at a Glance */}
+      <div className="border-b border-miyara-sky/20 px-8 py-10 lg:px-12">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-galam-blue">
+          Your Core Values
+        </h2>
+        <div className="mt-6 flex flex-wrap gap-3">
+          {values.map((value, index) => (
+            <div
+              key={value.id}
+              className="flex items-center gap-2 rounded-full border border-miyara-sky/30 bg-white px-4 py-2"
+            >
+              <span className="text-sm font-medium text-galam-blue">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span className="font-semibold text-miyara-navy">{value.value_name}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Values */}
