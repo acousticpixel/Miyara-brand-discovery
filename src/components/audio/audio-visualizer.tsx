@@ -14,23 +14,33 @@ export function AudioVisualizer({
   isActive,
   className,
 }: AudioVisualizerProps) {
+  // Track mount state to prevent hydration mismatch
+  const [mounted, setMounted] = useState(false);
   // Use state for animation time to avoid impure Date.now() in render
   const [animationTime, setAnimationTime] = useState(0);
 
+  // Mark as mounted after hydration completes
   useEffect(() => {
-    if (!isActive) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Don't start animation until mounted (prevents hydration mismatch)
+    if (!isActive || !mounted) return;
 
     const interval = setInterval(() => {
       setAnimationTime(Date.now());
     }, 50);
 
     return () => clearInterval(interval);
-  }, [isActive]);
+  }, [isActive, mounted]);
 
   // Generate bar heights based on audio level with some randomization
   const bars = 5;
   const getBarHeight = (index: number) => {
-    if (!isActive) return 4;
+    // Return consistent value during SSR and before mount
+    if (!isActive || !mounted) return 4;
     const baseHeight = audioLevel * 0.4;
     const variation = Math.sin(animationTime / 100 + index * 0.5) * 10;
     return Math.max(4, Math.min(40, baseHeight + variation));

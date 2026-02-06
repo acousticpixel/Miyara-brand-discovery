@@ -258,12 +258,13 @@ export function useSpeech(
       };
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error:', event.error);
-
-        // 'no-speech' and 'aborted' are non-fatal
+        // 'no-speech' and 'aborted' are non-fatal - skip logging
         if (event.error === 'no-speech' || event.error === 'aborted') {
           return;
         }
+
+        // Log actual errors for debugging
+        console.error('Speech recognition error:', event.error);
 
         if (event.error === 'not-allowed') {
           setError(
