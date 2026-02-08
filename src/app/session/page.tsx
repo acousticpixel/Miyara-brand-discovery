@@ -228,7 +228,7 @@ export default function SessionPage() {
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="Enter your company name"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-miyara-navy placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 

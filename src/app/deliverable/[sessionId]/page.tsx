@@ -25,6 +25,7 @@ export default function DeliverablePage() {
   const [deliverable, setDeliverable] = useState<DeliverableData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState('');
 
   useEffect(() => {
     async function loadDeliverable() {
@@ -91,6 +92,13 @@ export default function DeliverablePage() {
     loadDeliverable();
   }, [sessionId]);
 
+  // Set share URL after mount to avoid hydration mismatch
+  useEffect(() => {
+    if (deliverable?.share_slug) {
+      setShareUrl(`${window.location.origin}/deliverable/${deliverable.share_slug}`);
+    }
+  }, [deliverable?.share_slug]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -127,11 +135,6 @@ export default function DeliverablePage() {
       </div>
     );
   }
-
-  const shareUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/deliverable/${deliverable.share_slug}`
-      : '';
 
   return (
     <div className="min-h-screen bg-gray-50">

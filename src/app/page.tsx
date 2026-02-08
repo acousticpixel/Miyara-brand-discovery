@@ -39,8 +39,7 @@ export default function LandingPage() {
           </p>
 
           <h1 className="mt-6 text-4xl font-light tracking-tight text-miyara-navy lg:text-6xl">
-            Discover Your Brand&apos;s
-            <span className="block font-normal">Core Values</span>
+            Discover Your Brand&apos;s <br></br>Core Values
           </h1>
 
           <p className="mt-6 text-lg text-miyara-navy/70 lg:text-xl">
@@ -82,39 +81,39 @@ export default function LandingPage() {
           </h2>
 
           <div className="mt-12 grid gap-8 md:grid-cols-3">
-            <Card className="border-miyara-sky/20">
+            <Card className="border-transparent bg-galam-blue">
               <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-miyara-sky/20">
-                  <Mic className="h-6 w-6 text-miyara-navy" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+                  <Mic className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-miyara-navy">1. Speak Naturally</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">1. Speak Naturally</CardTitle>
+                <CardDescription className="text-white/80">
                   Have a real conversation with Miyara. She&apos;ll ask thoughtful questions
                   to understand what drives you.
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-miyara-sky/20">
+            <Card className="border-transparent bg-galam-blue">
               <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-miyara-sky/20">
-                  <MessageSquare className="h-6 w-6 text-miyara-navy" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+                  <MessageSquare className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-miyara-navy">2. Explore Values</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">2. Explore Values</CardTitle>
+                <CardDescription className="text-white/80">
                   Through rapid-fire exercises and deep conversations, uncover the values
                   that truly resonate with your brand.
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-miyara-sky/20">
+            <Card className="border-transparent bg-galam-blue">
               <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-miyara-sky/20">
-                  <FileText className="h-6 w-6 text-miyara-navy" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+                  <FileText className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-miyara-navy">3. Get Your Values</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">3. Get Your Values</CardTitle>
+                <CardDescription className="text-white/80">
                   Receive a shareable document with your 3-5 core values, defined in your
                   own words.
                 </CardDescription>
@@ -195,7 +194,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t bg-white py-8">
         <div className="container mx-auto px-4 text-center text-sm text-miyara-navy/60">
-          <p>&copy; {new Date().getFullYear()} Galam Arts. All rights reserved.</p>
+          <p>&copy; 2025 Galam Arts. All rights reserved.</p>
         </div>
       </footer>
     </div>

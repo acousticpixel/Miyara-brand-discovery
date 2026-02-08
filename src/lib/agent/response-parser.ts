@@ -26,35 +26,90 @@ export class AgentResponseParseError extends Error {
 }
 
 export function parseAgentResponse(rawResponse: string): AgentResponse {
-  // Try to extract JSON from the response
-  let jsonString = rawResponse.trim();
+  // Try multiple extraction methods for robustness
+  const extractors = [
+    // Method 1: Direct parse (response is already valid JSON)
+    (s: string) => JSON.parse(s.trim()),
+    // Method 2: Extract from markdown code blocks
+    (s: string) => {
+      const match = s.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (!match) return null;
+      return JSON.parse(match[1].trim());
+    },
+    // Method 3: Find first { to last } (handles extra text around JSON)
+    (s: string) => {
+      const start = s.indexOf('{');
+      const end = s.lastIndexOf('}');
+      if (start < 0 || end <= start) return null;
+      return JSON.parse(s.slice(start, end + 1));
+    },
+  ];
 
-  // Handle case where response might be wrapped in markdown code blocks
-  const jsonMatch = jsonString.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-  if (jsonMatch) {
-    jsonString = jsonMatch[1].trim();
+  let parsed: unknown = null;
+  let lastError: Error | null = null;
+
+  for (const extractor of extractors) {
+    try {
+      const result = extractor(rawResponse);
+      if (result !== null) {
+        parsed = result;
+        break;
+      }
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+      // Continue to next extractor
+    }
   }
 
-  // Try to parse the JSON
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(jsonString);
-  } catch {
+  if (parsed === null) {
     throw new AgentResponseParseError(
-      'Failed to parse agent response as JSON',
+      `Failed to parse agent response as JSON: ${lastError?.message || 'Unknown error'}`,
       rawResponse
     );
   }
 
-  // Validate the structure
-  if (!isValidAgentResponse(parsed)) {
+  // Normalize and validate the structure
+  const normalized = normalizeResponse(parsed);
+
+  if (!isValidAgentResponse(normalized)) {
     throw new AgentResponseParseError(
       'Agent response does not match expected structure',
       rawResponse
     );
   }
 
-  return parsed;
+  return normalized;
+}
+
+// Normalize response to handle common issues
+function normalizeResponse(obj: unknown): unknown {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  const response = obj as Record<string, unknown>;
+
+  // Normalize stateUpdates
+  if (response.stateUpdates && typeof response.stateUpdates === 'object') {
+    const updates = response.stateUpdates as Record<string, unknown>;
+
+    // Normalize phase to uppercase
+    if (typeof updates.phase === 'string') {
+      updates.phase = updates.phase.toUpperCase();
+    }
+
+    // Provide default empty arrays for optional array fields
+    updates.newInsights = updates.newInsights ?? [];
+    updates.identifiedValues = updates.identifiedValues ?? [];
+    updates.valuesToExplore = updates.valuesToExplore ?? [];
+  }
+
+  // Ensure uiActions exists
+  if (!response.uiActions) {
+    response.uiActions = {};
+  }
+
+  return response;
 }
 
 function isValidAgentResponse(obj: unknown): obj is AgentResponse {

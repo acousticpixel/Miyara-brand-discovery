@@ -11,25 +11,40 @@ const anthropic = new Anthropic({
 const DEFAULT_MODEL = 'claude-sonnet-4-20250514';
 
 export async function getAgentResponse(contextMessage: string): Promise<string> {
-  const response = await anthropic.messages.create({
-    model: DEFAULT_MODEL,
-    max_tokens: 1024,
-    system: BRAND_STRATEGIST_SYSTEM_PROMPT,
-    messages: [
-      {
-        role: 'user',
-        content: contextMessage,
-      },
-    ],
-  });
+  console.log('[Anthropic] Sending request to Claude...');
+  console.log('[Anthropic] Model:', DEFAULT_MODEL);
+  console.log('[Anthropic] Context message length:', contextMessage.length);
 
-  // Extract text content from response
-  const content = response.content[0];
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude');
+  try {
+    const response = await anthropic.messages.create({
+      model: DEFAULT_MODEL,
+      max_tokens: 1024,
+      system: BRAND_STRATEGIST_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: contextMessage,
+        },
+      ],
+    });
+
+    console.log('[Anthropic] Response received, stop_reason:', response.stop_reason);
+
+    // Extract text content from response
+    const content = response.content[0];
+    if (content.type !== 'text') {
+      console.error('[Anthropic] Unexpected content type:', content.type);
+      throw new Error('Unexpected response type from Claude');
+    }
+
+    console.log('[Anthropic] Response text length:', content.text.length);
+    console.log('[Anthropic] Response preview:', content.text.substring(0, 300));
+
+    return content.text;
+  } catch (error) {
+    console.error('[Anthropic] API call failed:', error);
+    throw error;
   }
-
-  return content.text;
 }
 
 export async function getAgentResponseStreaming(

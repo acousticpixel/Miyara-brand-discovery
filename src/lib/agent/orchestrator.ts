@@ -10,7 +10,7 @@ import {
   shouldTransitionPhase,
 } from './state-machine';
 import { buildUserMessage, buildInitialMessage } from './prompt-builder';
-import { parseAgentResponse } from './response-parser';
+import { parseAgentResponse, AgentResponseParseError } from './response-parser';
 
 export interface OrchestratorResult {
   response: AgentResponse;
@@ -66,6 +66,14 @@ export class ConversationOrchestrator {
       };
     } catch (error) {
       console.error('Error starting session:', error);
+      // Log detailed error info for debugging
+      if (error instanceof AgentResponseParseError) {
+        console.error('Parse error - Raw response:', error.rawResponse.substring(0, 500));
+      }
+      console.error('Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+      });
       return {
         response: this.createErrorResponse(),
         newState: this.state,
@@ -116,6 +124,14 @@ export class ConversationOrchestrator {
       };
     } catch (error) {
       console.error('Error processing message:', error);
+      // Log detailed error info for debugging
+      if (error instanceof AgentResponseParseError) {
+        console.error('Parse error - Raw response:', error.rawResponse.substring(0, 500));
+      }
+      console.error('Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+      });
       return {
         response: this.createErrorResponse(),
         newState: this.state,

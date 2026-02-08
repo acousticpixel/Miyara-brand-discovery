@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 // Conversation transcript showing history
@@ -15,10 +16,26 @@ interface ConversationTranscriptProps {
   className?: string;
 }
 
+// Format time consistently to avoid hydration mismatch
+function formatTime(timestamp: string): string {
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
 export function ConversationTranscript({
   entries,
   className,
 }: ConversationTranscriptProps) {
+  const [mounted, setMounted] = useState(false);
+
+  // Mark as mounted to enable client-side formatting (prevents hydration mismatch)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: mounted state pattern for hydration
+    setMounted(true);
+  }, []);
+
   if (entries.length === 0) {
     return null;
   }
@@ -40,10 +57,7 @@ export function ConversationTranscript({
               {entry.role === 'user' ? 'You' : 'Miyara'}
             </span>
             <span className="text-xs text-gray-400">
-              {new Date(entry.timestamp).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              {mounted ? formatTime(entry.timestamp) : '--:--'}
             </span>
           </div>
           <p className="text-sm">{entry.content}</p>
